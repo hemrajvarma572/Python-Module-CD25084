@@ -1,55 +1,71 @@
 import random
 
-print("=" * 40)
-print("       NUMBER GUESSING GAME")
-print("=" * 40)
+LOW, HIGH = 1, 100
+MAX_ATTEMPTS = 7
 
-# Generate random number
-secret_number = random.randint(1, 100)
 
-# Game settings
-max_attempts = 10
-attempts = 0
+def play_round():
+    """Modules 1-3: one round with hints, attempt tracking and scoring.
+    Returns the score earned in this round."""
+    secret = random.randint(LOW, HIGH)
+    attempts = 0
+    print(f"\nI'm thinking of a number between {LOW} and {HIGH}.")
+    print(f"You have {MAX_ATTEMPTS} attempts.\n")
 
-print("\nI have selected a number between 1 and 100.")
-print("You have 10 attempts to guess it.")
-
-while attempts < max_attempts:
-
-    try:
-        guess = int(input("\nEnter your guess: "))
-
-        # Check range
-        if guess < 1 or guess > 100:
-            print("Please enter a number between 1 and 100.")
+    while attempts < MAX_ATTEMPTS:
+        try:
+            guess = int(input(f"Attempt {attempts + 1}/{MAX_ATTEMPTS} - Enter your guess: "))
+        except ValueError:
+            print("Please enter a valid whole number.")
             continue
 
         attempts += 1
 
-        # Check the guess
-        if guess < secret_number:
+        if guess == secret:
+            score = (MAX_ATTEMPTS - attempts + 1) * 10
+            print(f"Correct! You guessed it in {attempts} attempt(s).")
+            print(f"Round score: {score}")
+            return score
+        elif guess > secret:
+            print("Too High!")
+        else:
             print("Too Low!")
 
-        elif guess > secret_number:
-            print("Too High!")
+    print(f"Out of attempts! The number was {secret}.")
+    print("Round score: 0")
+    return 0
 
-        else:
-            print("\n🎉 Congratulations!")
-            print("You guessed the correct number.")
-            print("Number:", secret_number)
-            print("Attempts used:", attempts)
+
+def main():
+    """Module 4: multiple rounds and final result."""
+    total_score = 0
+    best_score = 0
+    rounds_played = 0
+
+    print("=== NUMBER GUESSING GAME ===")
+
+    while True:
+        round_score = play_round()
+        rounds_played += 1
+        total_score += round_score
+        best_score = max(best_score, round_score)
+
+        print(f"Total score so far: {total_score}")
+
+        again = input("\nPlay again? (y/n): ").strip().lower()
+        while again not in ("y", "n"):
+            again = input("Please type y or n: ").strip().lower()
+        if again == "n":
             break
 
-        # Show remaining attempts
-        remaining = max_attempts - attempts
-        print("Attempts remaining:", remaining)
+    print("\n=== FINAL RESULT ===")
+    print(f"Rounds played : {rounds_played}")
+    print(f"Total score   : {total_score}")
+    print(f"Best round    : {best_score}")
+    print(f"Average score : {total_score / rounds_played:.1f}")
+    print("Thanks for playing!")
 
-    except ValueError:
-        print("Invalid input! Please enter a number.")
 
-else:
-    print("\n❌ Game Over!")
-    print("You used all 10 attempts.")
-    print("The correct number was:", secret_number)
-
-print("\nThank you for playing!")
+if __name__ == "__main__":
+    main()
+    
